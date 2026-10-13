@@ -1,4 +1,5 @@
 // Queries for admin pages. RLS only returns all rows to admins.
+import type { Announcement } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 
 export const PAGE_SIZE = 25;
@@ -100,4 +101,28 @@ export function toQuery(params: Record<string, string | number | undefined>) {
     Object.entries(params).flatMap(([k, v]) => (v === undefined || v === "" ? [] : [[k, String(v)]])),
   ).toString();
   return qs ? `?${qs}` : "";
+}
+
+export const ADMIN_ANNOUNCEMENTS_LIMIT = 300;
+
+/**
+ * Announcements whose date or registration deadline falls within [from, to]
+ * (either bound optional), soonest date first.
+ */
+export async function getAnnouncementsForAdmin({ from, to }: { from?: string; to?: string }): Promise<Announcement[]> {
+  const inRange = (col: string) =>
+    [from && `${col}.gte.${from}`, to && `${col}.lte.${to}`].filter(Boolean).join(",");
+
+  const supabase = await createClient();
+  let query = supabase
+    .from("announcements")
+    .select("id, title, body, date, register_by, registration_link")
+    .order("date")
+    .order("title")
+    .limit(ADMIN_ANNOUNCEMENTS_LIMIT);
+  if (from || to) query = query.or(`and(${inRange("date")}),and(${inRange("register_by")})`);
+
+  const { data, error } = await query;
+  if (error) console.error("getAnnouncementsForAdmin failed", error);
+  return data ?? [];
 }

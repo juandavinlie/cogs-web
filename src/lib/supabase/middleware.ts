@@ -1,9 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Routes that require a signed-in user. Admin pages (events, members, attendance_records)
-// additionally check the role themselves.
-const PROTECTED = /^\/(attendance|attendance_records|events|members)(\/|$)/;
+// Routes that require a signed-in user. Admin pages (events, announcements, members,
+// attendance_records) additionally check the role themselves.
+const PROTECTED = /^\/(announcements|attendance|attendance_records|events|members)(\/|$)/;
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

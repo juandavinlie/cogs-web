@@ -6,12 +6,7 @@ import { requireAdmin } from "@/lib/auth";
 import { getLocation } from "@/lib/data";
 import { safeNext } from "@/lib/redirect";
 import { createClient } from "@/lib/supabase/server";
-
-function withParam(path: string, key: string, value: string) {
-  const url = new URL(path, "http://x");
-  url.searchParams.set(key, value);
-  return url.pathname + url.search;
-}
+import { withParam } from "@/lib/url";
 
 export async function deleteEvent(formData: FormData) {
   await requireAdmin();

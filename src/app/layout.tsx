@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Lora } from "next/font/google";
+import { Suspense } from "react";
 import Header from "@/components/Header";
+import NavigationProgress from "@/components/NavigationProgress";
 import { CHURCH } from "@/lib/church";
 import "./globals.css";
 
@@ -17,6 +19,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${inter.variable} ${lora.variable} flex min-h-dvh flex-col font-sans antialiased`}>
+        <Suspense fallback={null}>
+          <NavigationProgress />
+        </Suspense>
         <Header />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-line py-6 text-center text-sm text-muted">

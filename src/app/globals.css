@@ -20,3 +20,50 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
 }
+
+/*
+ * Dropdowns: replace the browser's chevron (which hugs the right border) with our own,
+ * inset 0.75rem from the right to match the 0.75rem (px-3) left padding.
+ * Unlayered on purpose so it wins over Tailwind's px-* utilities on <select>.
+ */
+select:not([multiple]) {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236b7280' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+}
+
+/* Page navigation progress bar (see NavigationProgress.tsx). */
+.nav-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 2px;
+  background: var(--color-accent);
+  transform-origin: left;
+  pointer-events: none;
+}
+.nav-progress--loading {
+  /* Fades in after a short delay so quick navigations don't flicker, then creeps towards the end. */
+  animation:
+    nav-progress-in 150ms ease-out 120ms both,
+    nav-progress-grow 8s cubic-bezier(0.1, 0.7, 0.2, 1) both;
+}
+.nav-progress--done {
+  transform: scaleX(1);
+  opacity: 0;
+  transition: opacity 300ms ease 100ms;
+}
+@keyframes nav-progress-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes nav-progress-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(0.9); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress--loading { animation: nav-progress-in 150ms ease-out 120ms both; transform: scaleX(0.6); }
+}

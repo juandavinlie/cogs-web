@@ -45,6 +45,7 @@ export default function AddEventForm({ locations, today }: { locations: Location
         </span>
         <textarea
           name="description"
+          placeholder="e.g. Join us for worship and the Word. Lunch provided after service."
           rows={3}
           maxLength={1000}
           defaultValue={v?.description}

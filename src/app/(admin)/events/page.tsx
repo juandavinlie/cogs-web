@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import Form from "next/form";
 import Link from "next/link";
 import { Notice, param, type SearchParams } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
 import { ADMIN_EVENTS_LIMIT, getEventsForAdmin, getLocations } from "@/lib/data";
 import { formatDay, formatTimeRange, sgDate } from "@/lib/time";
-import DeleteEventButton from "./DeleteEventButton";
+import ConfirmDeleteButton from "@/components/ConfirmDeleteButton";
+import { isDate } from "@/lib/url";
+import { deleteEvent } from "./actions";
 
 export const metadata: Metadata = { title: "Manage events" };
-
-const isDate = (v?: string) => (v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : undefined);
 
 export default async function EventsAdminPage({ searchParams }: { searchParams: SearchParams }) {
   await requireAdmin();
@@ -40,7 +41,7 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
         </Link>
       </div>
 
-      <form method="get" className="mt-6 grid grid-cols-2 gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-4 sm:items-end">
+      <Form action="/events" className="mt-6 grid grid-cols-2 gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-4 sm:items-end">
         <label className="col-span-2 block sm:col-span-1">
           <span className="text-sm font-medium">Location</span>
           <select name="location" defaultValue={filters.location ?? ""} className={inputClass}>
@@ -64,7 +65,7 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
             All
           </Link>
         </div>
-      </form>
+      </Form>
 
       <div className="mt-6 space-y-4">
         <Notice error={param(sp, "error")} message={param(sp, "message")} />
@@ -99,7 +100,14 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                       </span>
                     )}
                   </div>
-                  <DeleteEventButton id={e.id} name={e.name} attendees={attendees} returnTo={returnTo} />
+                  <ConfirmDeleteButton
+                    action={deleteEvent}
+                    id={e.id}
+                    returnTo={returnTo}
+                    confirmMessage={`Delete “${e.name}”?${
+                      attendees > 0 ? `\n\nThis will also delete ${attendees} attendance record${attendees === 1 ? "" : "s"}.` : ""
+                    }`}
+                  />
                 </li>
               );
             })}

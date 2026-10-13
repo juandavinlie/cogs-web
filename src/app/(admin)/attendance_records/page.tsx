@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Form from "next/form";
 import Link from "next/link";
 import Pagination from "@/components/Pagination";
 import { inputClass, param, type SearchParams } from "@/components/ui";
@@ -32,7 +33,7 @@ export default async function AttendanceRecordsPage({ searchParams }: { searchPa
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="font-serif text-2xl font-semibold">Attendance records</h1>
 
-      <form method="get" className="mt-6 grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+      <Form action="/attendance_records" className="mt-6 grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
         <label className="block">
           <span className="text-sm font-medium">Event location</span>
           <select name="location" defaultValue={filters.location ?? ""} className={inputClass}>
@@ -71,7 +72,7 @@ export default async function AttendanceRecordsPage({ searchParams }: { searchPa
             </Link>
           )}
         </div>
-      </form>
+      </Form>
 
       <div className="mt-6 space-y-4">
         {rows.length === 0 ? (

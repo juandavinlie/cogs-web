@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Form from "next/form";
 import Link from "next/link";
 import Pagination from "@/components/Pagination";
 import { inputClass, param, type SearchParams } from "@/components/ui";
@@ -26,14 +27,14 @@ export default async function MembersPage({ searchParams }: { searchParams: Sear
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="font-serif text-2xl font-semibold">Members</h1>
 
-      <form method="get" className="mt-6 grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-4 sm:items-end">
+      <Form action="/members" className="mt-6 grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-4 sm:items-end">
         <label className="block">
           <span className="text-sm font-medium">Name</span>
-          <input name="name" defaultValue={filters.name} placeholder="Search name" className={inputClass} />
+          <input name="name" defaultValue={filters.name} placeholder="e.g. Simon Peter" className={inputClass} />
         </label>
         <label className="block">
           <span className="text-sm font-medium">Email</span>
-          <input name="email" defaultValue={filters.email} placeholder="Search email" className={inputClass} />
+          <input name="email" defaultValue={filters.email} placeholder="e.g. simon.peter@example.com" className={inputClass} />
         </label>
         <label className="block">
           <span className="text-sm font-medium">Location</span>
@@ -52,7 +53,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Sear
             </Link>
           )}
         </div>
-      </form>
+      </Form>
 
       <div className="mt-6 space-y-4">
         {rows.length === 0 ? (

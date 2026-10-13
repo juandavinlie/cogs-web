@@ -26,8 +26,8 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
     <AuthCard title="Set a new password" subtitle={`For ${user.email}`}>
       <Notice error={param(sp, "error")} />
       <form action={updatePassword} className="space-y-4">
-        <Field label="New password" name="password" type="password" autoComplete="new-password" minLength={8} required />
-        <Field label="Confirm new password" name="confirm" type="password" autoComplete="new-password" minLength={8} required />
+        <Field label="New password" name="password" placeholder="At least 8 characters" type="password" autoComplete="new-password" minLength={8} required />
+        <Field label="Confirm new password" name="confirm" placeholder="Re-enter your new password" type="password" autoComplete="new-password" minLength={8} required />
         <SubmitButton pendingText="Saving…">Update password</SubmitButton>
       </form>
     </AuthCard>

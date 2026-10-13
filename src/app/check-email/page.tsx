@@ -19,7 +19,7 @@ export default async function CheckEmailPage({ searchParams }: { searchParams: S
       <details className="rounded-lg border border-line bg-white p-4" open={Boolean(error)}>
         <summary className="cursor-pointer text-sm font-medium">Didn&apos;t get it? Resend the link</summary>
         <form action={resendVerification} className="mt-4 space-y-4">
-          <Field label="Email" name="email" type="email" autoComplete="email" required />
+          <Field label="Email" name="email" placeholder="e.g. simon.peter@example.com" type="email" autoComplete="email" required />
           <SubmitButton pendingText="Sending…">Resend verification email</SubmitButton>
         </form>
       </details>

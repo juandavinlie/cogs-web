@@ -6,7 +6,15 @@ import SubmitButton from "@/components/SubmitButton";
 import { Field, Notice, Select } from "@/components/ui";
 import type { Location } from "@/lib/data";
 
-export default function SignupForm({ locations, next }: { locations: Location[]; next: string }) {
+export default function SignupForm({
+  locations,
+  next,
+  defaultLocation,
+}: {
+  locations: Location[];
+  next: string;
+  defaultLocation?: string;
+}) {
   const [state, action] = useActionState<SignUpState, FormData>(signUp, {});
   const v = state.values;
 
@@ -15,16 +23,16 @@ export default function SignupForm({ locations, next }: { locations: Location[];
     <form key={JSON.stringify(v ?? {})} action={action} className="space-y-4">
       <Notice error={state.error} />
       <input type="hidden" name="next" value={next} />
-      <Field label="Full name" name="name" autoComplete="name" required maxLength={100} defaultValue={v?.name} />
-      <Field label="Email" name="email" type="email" autoComplete="email" required defaultValue={v?.email} />
-      <Select label="Location" name="location" required defaultValue={v?.location ?? ""}>
+      <Field label="Full name" name="name" placeholder="e.g. Simon Peter" autoComplete="name" required maxLength={100} defaultValue={v?.name} />
+      <Field label="Email" name="email" placeholder="e.g. simon.peter@example.com" type="email" autoComplete="email" required defaultValue={v?.email} />
+      <Select label="Location" name="location" required defaultValue={v?.location ?? defaultLocation ?? ""}>
         <option value="" disabled>Choose your location</option>
         {locations.map((l) => (
           <option key={l.code} value={l.code}>{l.name}</option>
         ))}
       </Select>
-      <Field label="Password" name="password" type="password" autoComplete="new-password" minLength={8} required />
-      <Field label="Confirm password" name="confirm" type="password" autoComplete="new-password" minLength={8} required />
+      <Field label="Password" name="password" placeholder="At least 8 characters" type="password" autoComplete="new-password" minLength={8} required />
+      <Field label="Confirm password" name="confirm" placeholder="Re-enter your password" type="password" autoComplete="new-password" minLength={8} required />
       <SubmitButton pendingText="Creating account…">Create account</SubmitButton>
     </form>
   );

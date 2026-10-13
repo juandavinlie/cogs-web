@@ -12,7 +12,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
     <AuthCard title="Forgot your password?" subtitle="Enter your email and we'll send you a link to set a new one.">
       <Notice error={param(sp, "error")} message={param(sp, "message")} />
       <form action={requestPasswordReset} className="space-y-4">
-        <Field label="Email" name="email" type="email" autoComplete="email" required />
+        <Field label="Email" name="email" placeholder="e.g. simon.peter@example.com" type="email" autoComplete="email" required />
         <SubmitButton pendingText="Sending…">Send reset link</SubmitButton>
       </form>
       <p className="text-sm">

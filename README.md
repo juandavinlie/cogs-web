@@ -8,6 +8,8 @@ Next.js (App Router) + Tailwind + Supabase Auth & Postgres.
 
 - `/events`: admins only. Lists all events, filterable by location and date range, with attendee counts and a delete button.
 - `/events/add`: admins only. Form to add an event.
+- `/announcements`: admins only. Lists announcements, filterable by date range (matching either the date or the register-by date), with a delete button.
+- `/announcements/add`: admins only. Form to add an announcement (title, details, date, optional registration link and register-by date).
 - `/members`: admins only. All users (members and admins), paginated, filterable by name, email and location.
 - `/attendance_records`: admins only. All check-ins, paginated, filterable by event location, the member's own location, and event.
 
@@ -38,7 +40,7 @@ Each user has a row in `profiles` with `full_name`, `email`, `location_code` (th
 
 ## Managing content
 
-Admins can add and delete events at `/events`. Everything else (and event edits) is done in the Supabase **Table Editor**:
+Admins can add and delete events at `/events` and announcements at `/announcements`. Everything else (including edits) is done in the Supabase **Table Editor**:
 
 | Table | What it is |
 |---|---|
