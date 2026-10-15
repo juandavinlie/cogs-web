@@ -20,6 +20,11 @@ function field(formData: FormData, name: string) {
   return String(formData.get(name) ?? "").trim();
 }
 
+/** A person's name: trimmed, with runs of spaces collapsed. */
+function name(formData: FormData, key: string) {
+  return field(formData, key).replace(/\s+/g, " ");
+}
+
 export async function logIn(formData: FormData) {
   const email = field(formData, "email");
   const password = String(formData.get("password") ?? "");
@@ -37,12 +42,13 @@ export async function logIn(formData: FormData) {
   redirect(next);
 }
 
-export type SignUpValues = { name: string; email: string; location: string };
+export type SignUpValues = { firstName: string; lastName: string; email: string; location: string };
 export type SignUpState = { error?: string; values?: SignUpValues };
 
 export async function signUp(_prev: SignUpState, formData: FormData): Promise<SignUpState> {
   const values: SignUpValues = {
-    name: field(formData, "name"),
+    firstName: name(formData, "firstName"),
+    lastName: name(formData, "lastName"),
     email: field(formData, "email"),
     location: field(formData, "location"),
   };
@@ -51,7 +57,8 @@ export async function signUp(_prev: SignUpState, formData: FormData): Promise<Si
   const next = safeNext(formData.get("next"));
   const fail = (error: string): SignUpState => ({ error, values });
 
-  if (!values.name) return fail("Please enter your name.");
+  if (!values.firstName) return fail("Please enter your first name.");
+  if (!values.lastName) return fail("Please enter your last name.");
   if (!values.location || values.location === COMBINED_LOCATION_CODE || !(await getLocation(values.location))) {
     return fail("Please choose your location.");
   }
@@ -64,8 +71,14 @@ export async function signUp(_prev: SignUpState, formData: FormData): Promise<Si
     password,
     options: {
       emailRedirectTo: `${await siteUrl()}/auth/confirm?next=${encodeURIComponent(next)}`,
-      // Copied into public.profiles by the handle_new_user trigger.
-      data: { full_name: values.name, location_code: values.location },
+      // full_name and location_code are copied into public.profiles by the handle_new_user trigger.
+      // first_name/last_name are kept in the user's metadata so the split isn't lost.
+      data: {
+        full_name: `${values.firstName} ${values.lastName}`,
+        first_name: values.firstName,
+        last_name: values.lastName,
+        location_code: values.location,
+      },
     },
   });
 

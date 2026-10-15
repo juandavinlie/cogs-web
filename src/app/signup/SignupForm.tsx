@@ -23,7 +23,26 @@ export default function SignupForm({
     <form key={JSON.stringify(v ?? {})} action={action} className="space-y-4">
       <Notice error={state.error} />
       <input type="hidden" name="next" value={next} />
-      <Field label="Full name" name="name" placeholder="e.g. Simon Peter" autoComplete="name" required maxLength={100} defaultValue={v?.name} />
+      <div className="grid grid-cols-2 gap-3">
+        <Field
+          label="First name"
+          name="firstName"
+          placeholder="e.g. Simon"
+          autoComplete="given-name"
+          required
+          maxLength={50}
+          defaultValue={v?.firstName}
+        />
+        <Field
+          label="Last name"
+          name="lastName"
+          placeholder="e.g. Peter"
+          autoComplete="family-name"
+          required
+          maxLength={50}
+          defaultValue={v?.lastName}
+        />
+      </div>
       <Field label="Email" name="email" placeholder="e.g. simon.peter@example.com" type="email" autoComplete="email" required defaultValue={v?.email} />
       <Select label="Location" name="location" required defaultValue={v?.location ?? defaultLocation ?? ""}>
         <option value="" disabled>Choose your location</option>
