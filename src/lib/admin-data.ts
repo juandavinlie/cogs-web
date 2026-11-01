@@ -107,7 +107,7 @@ export const ADMIN_ANNOUNCEMENTS_LIMIT = 300;
 
 /**
  * Announcements whose date or registration deadline falls within [from, to]
- * (either bound optional), soonest date first.
+ * (either bound optional), plus any with no date, soonest date first.
  */
 export async function getAnnouncementsForAdmin({ from, to }: { from?: string; to?: string }): Promise<Announcement[]> {
   const inRange = (col: string) =>
@@ -117,10 +117,10 @@ export async function getAnnouncementsForAdmin({ from, to }: { from?: string; to
   let query = supabase
     .from("announcements")
     .select("id, title, body, date, register_by, registration_link")
-    .order("date")
+    .order("date", { nullsFirst: false })
     .order("title")
     .limit(ADMIN_ANNOUNCEMENTS_LIMIT);
-  if (from || to) query = query.or(`and(${inRange("date")}),and(${inRange("register_by")})`);
+  if (from || to) query = query.or(`and(${inRange("date")}),and(${inRange("register_by")}),date.is.null`);
 
   const { data, error } = await query;
   if (error) console.error("getAnnouncementsForAdmin failed", error);

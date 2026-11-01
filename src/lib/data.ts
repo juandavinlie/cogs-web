@@ -19,7 +19,7 @@ export type Announcement = {
   id: string;
   title: string;
   body: string;
-  date: string; // YYYY-MM-DD
+  date: string | null; // YYYY-MM-DD
   register_by: string | null; // YYYY-MM-DD
   registration_link: string | null;
 };
@@ -112,26 +112,44 @@ export function registrationOpen(a: Announcement, today = sgDate()) {
   return Boolean(a.registration_link) && (!a.register_by || a.register_by >= today);
 }
 
-/**
- * The most upcoming announcements: those whose date or registration deadline
- * hasn't passed, ordered by whichever of the two comes up next.
- */
-export async function getAnnouncements(limit = 6): Promise<Announcement[]> {
-  const today = sgDate();
-
+/** All announcements, in the bulletin's order. Announcements added by hand come after it. */
+export async function getAnnouncements(): Promise<Announcement[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("announcements")
-    .select("id, title, body, date, register_by, registration_link")
-    .or(`date.gte.${today},register_by.gte.${today}`);
+    .select("id, title, body, date, register_by, registration_link, position")
+    .order("position")
+    .order("created_at");
   if (error) console.error("getAnnouncements failed", error);
+  return data ?? [];
+}
 
-  const nextDate = (a: Announcement) =>
-    [a.register_by, a.date].filter((d): d is string => !!d && d >= today).sort()[0];
+/** When the announcements were last replaced: the oldest created_at among them. */
+export async function getAnnouncementsUpdatedAt(): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("announcements")
+    .select("created_at")
+    .order("created_at")
+    .limit(1)
+    .maybeSingle();
+  if (error) console.error("getAnnouncementsUpdatedAt failed", error);
+  return data?.created_at ?? null;
+}
 
-  return (data ?? [])
-    .sort((a, b) => nextDate(a).localeCompare(nextDate(b)) || a.date.localeCompare(b.date))
-    .slice(0, limit);
+export type PrayerBurdens = { bulletin_date: string; message_title: string | null; content: string };
+
+/** The most recent week's prayer burdens. */
+export async function getLatestPrayerBurdens(): Promise<PrayerBurdens | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("prayer_burdens")
+    .select("bulletin_date, message_title, content")
+    .order("bulletin_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) console.error("getLatestPrayerBurdens failed", error);
+  return data;
 }
 
 export type AdminEvent = ChurchEvent & { attendance: { count: number }[] };

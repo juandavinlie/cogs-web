@@ -47,9 +47,9 @@ export async function addAnnouncement(_prev: AddAnnouncementState, formData: For
   const fail = (error: string): AddAnnouncementState => ({ error, values });
 
   if (!values.title) return fail("Please enter a title.");
-  if (!isDate(values.date)) return fail("Please choose a date.");
+  if (values.date && !isDate(values.date)) return fail("That date isn't valid.");
   if (values.registerBy && !isDate(values.registerBy)) return fail("That register-by date isn't valid.");
-  if (values.registerBy && values.registerBy > values.date) {
+  if (values.registerBy && values.date && values.registerBy > values.date) {
     return fail("The register-by date should be on or before the announcement date.");
   }
   if (values.registrationLink && !/^https?:\/\/\S+\.\S+/i.test(values.registrationLink)) {
@@ -60,10 +60,19 @@ export async function addAnnouncement(_prev: AddAnnouncementState, formData: For
   }
 
   const supabase = await createClient();
+  // Goes after the bulletin's announcements on the home page.
+  const { data: last } = await supabase
+    .from("announcements")
+    .select("position")
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   const { error } = await supabase.from("announcements").insert({
+    position: (last?.position ?? -1) + 1,
     title: values.title,
     body: values.body,
-    date: values.date,
+    date: values.date || null,
     register_by: values.registerBy || null,
     registration_link: values.registrationLink || null,
   });

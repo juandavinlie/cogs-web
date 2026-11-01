@@ -5,7 +5,7 @@ import SubmitButton from "@/components/SubmitButton";
 import { Field, Notice, inputClass } from "@/components/ui";
 import { addAnnouncement, type AddAnnouncementState } from "../actions";
 
-export default function AddAnnouncementForm({ today }: { today: string }) {
+export default function AddAnnouncementForm() {
   const [state, action] = useActionState<AddAnnouncementState, FormData>(addAnnouncement, {});
   const v = state.values;
 
@@ -31,8 +31,8 @@ export default function AddAnnouncementForm({ today }: { today: string }) {
       </label>
 
       <div>
-        <Field label="Date" name="date" type="date" required defaultValue={v?.date ?? today} />
-        <p className="mt-1 text-sm text-muted">The date the announcement is about. It shows on the home page until then.</p>
+        <Field label="Date (optional)" name="date" type="date" defaultValue={v?.date} />
+        <p className="mt-1 text-sm text-muted">The date the announcement is about, shown on its card.</p>
       </div>
 
       <fieldset className="space-y-4 rounded-lg border border-line bg-white p-4">

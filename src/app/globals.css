@@ -35,6 +35,13 @@ select:not([multiple]) {
   padding-right: 2.5rem;
 }
 
+/* The hero buttons glide to their section. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* Page navigation progress bar (see NavigationProgress.tsx). */
 .nav-progress {
   position: fixed;

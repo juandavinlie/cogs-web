@@ -2,12 +2,18 @@
 export const TIME_ZONE = "Asia/Singapore";
 
 const dayFmt = new Intl.DateTimeFormat("en-SG", { timeZone: TIME_ZONE, weekday: "long", day: "numeric", month: "short" });
+const fullDateFmt = new Intl.DateTimeFormat("en-SG", { timeZone: TIME_ZONE, day: "numeric", month: "long", year: "numeric" });
 const timeFmt = new Intl.DateTimeFormat("en-SG", { timeZone: TIME_ZONE, hour: "numeric", minute: "2-digit", hour12: true });
 const keyFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" });
 
 /** "Sunday, 19 Oct" */
 export function formatDay(value: string | Date) {
   return dayFmt.format(new Date(value));
+}
+
+/** "1 November 2026" */
+export function formatFullDate(value: string | Date) {
+  return fullDateFmt.format(new Date(value));
 }
 
 /** "9:00 am" */

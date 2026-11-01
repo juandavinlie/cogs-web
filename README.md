@@ -2,7 +2,7 @@
 
 Next.js (App Router) + Tailwind + Supabase Auth & Postgres.
 
-- `/`: upcoming announcements, events in the next two weeks, and address. Public; looks the same whether or not you're logged in.
+- `/`: upcoming announcements, events in the next two weeks, the latest prayer burdens (in a popup), and address. Public; looks the same whether or not you're logged in.
 - `/login`, `/signup`, `/check-email`, `/forgot-password`, `/reset-password`: email/password auth with email verification and password reset.
 - `/attendance`: logged-in only. Lists events that require attendance and are open for check-in (from 30 minutes before start until the end); check in to one. Add `?location=rhe` (any location code) to only show that location's events plus Combined events. The home page supports the same filter. Saves to the `attendance` table and shows a confirmation page.
 
@@ -10,6 +10,7 @@ Next.js (App Router) + Tailwind + Supabase Auth & Postgres.
 - `/events/add`: admins only. Form to add an event.
 - `/announcements`: admins only. Lists announcements, filterable by date range (matching either the date or the register-by date), with a delete button.
 - `/announcements/add`: admins only. Form to add an announcement (title, details, date, optional registration link and register-by date).
+- `/bulletin`: admins only. Upload the weekly announcements PDF, review and edit what was read from it, then update the site. This saves the week's prayer burdens and **replaces all announcements**.
 - `/members`: admins only. All users (members and admins), paginated, filterable by name, email and location.
 - `/attendance_records`: admins only. All check-ins, paginated, filterable by event location, the member's own location, and event.
 
@@ -50,7 +51,8 @@ Admins can add and delete events at `/events` and announcements at `/announcemen
 
 - **Home page events:** anything that hasn't ended and starts within 14 days.
 - **Check-in list** (`getOngoingEvents` in `src/lib/data.ts`): events (at the `?location=` location, if given) with `requires_attendance = true` where `starts_at − 30 min ≤ now ≤ ends_at`. The 30 minutes is `CHECK_IN_OPENS_EARLY_MINUTES`; if you change it, change the attendance insert policy in the database to match.
-- **Announcements:** shown if their `date` or `register_by` is today or later, soonest first (whichever of the two comes next), up to 6. The **Register** link is hidden once `register_by` has passed.
+- **Announcements:** all are shown, with whichever has the next upcoming date or deadline first, then the rest in bulletin order. The **Register** link is hidden once `register_by` has passed. The home page's "Updated on" date is the oldest `created_at` among them.
+- **Prayer burdens:** one row per bulletin in `prayer_burdens`, stored as Markdown. The PDF parser is in `src/lib/bulletin/parse.ts`.
 - **Entering times:** include the offset to be safe, e.g. `2026-10-19 09:00+08`. In the SQL editor, times without an offset are read as SGT.
 
 Site name: `src/lib/church.ts`. Colors and fonts: `src/app/globals.css`.

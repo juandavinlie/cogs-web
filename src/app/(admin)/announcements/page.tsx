@@ -17,9 +17,8 @@ export default async function AnnouncementsAdminPage({ searchParams }: { searchP
   const sp = await searchParams;
   const today = sgDate();
 
-  // Default to current ones: date or registration deadline from today onward.
   const filters = {
-    from: "from" in sp ? isDate(param(sp, "from")) : today,
+    from: isDate(param(sp, "from")),
     to: isDate(param(sp, "to")),
   };
 
@@ -46,7 +45,7 @@ export default async function AnnouncementsAdminPage({ searchParams }: { searchP
         </label>
         <div className="col-span-2 flex gap-2 sm:col-span-1">
           <button className="flex-1 rounded-lg bg-brand px-4 py-2.5 font-medium text-white hover:bg-brand-dark">Filter</button>
-          <Link href="/announcements?from=" className="rounded-lg border border-line px-4 py-2.5 text-center font-medium hover:bg-paper">
+          <Link href="/announcements" className="rounded-lg border border-line px-4 py-2.5 text-center font-medium hover:bg-paper">
             All
           </Link>
         </div>
@@ -59,7 +58,7 @@ export default async function AnnouncementsAdminPage({ searchParams }: { searchP
           {announcements.length === ADMIN_ANNOUNCEMENTS_LIMIT
             ? `Showing the first ${ADMIN_ANNOUNCEMENTS_LIMIT} announcements. Narrow the dates to see more.`
             : `${announcements.length} announcement${announcements.length === 1 ? "" : "s"}`}
-          {" · "}matched by date or register-by date
+          {" · "}matched by date or register-by date, plus any with no date
         </p>
 
         {announcements.length === 0 ? (
@@ -67,10 +66,10 @@ export default async function AnnouncementsAdminPage({ searchParams }: { searchP
         ) : (
           <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-white">
             {announcements.map((a) => {
-              const past = a.date < today && !(a.register_by && a.register_by >= today);
+              const past = !!a.date && a.date < today && !(a.register_by && a.register_by >= today);
               return (
                 <li key={a.id} className={`flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-start ${past ? "opacity-60" : ""}`}>
-                  <p className="font-medium sm:w-48 sm:shrink-0">{formatDateOnly(a.date)}</p>
+                  <p className="font-medium sm:w-48 sm:shrink-0">{a.date ? formatDateOnly(a.date) : "No date"}</p>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium">{a.title}</p>
                     {a.body && <p className="mt-1 line-clamp-2 text-sm text-muted">{a.body}</p>}
