@@ -28,12 +28,11 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refreshes the auth token if needed. Don't put code between client creation and this call.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() verifies the token locally, so this runs before every page without a network call.
+  const { data } = await supabase.auth.getClaims();
 
   const { pathname, search } = request.nextUrl;
-  if (!user && PROTECTED.test(pathname)) {
+  if (!data?.claims && PROTECTED.test(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(pathname + search)}`;
